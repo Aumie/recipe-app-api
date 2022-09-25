@@ -2,8 +2,6 @@
 Test for the user API.
 """
 
-import email
-from os import stat
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.urls import reverse
@@ -22,6 +20,8 @@ def create_user(**params):
 
 
 class PublicUserApiTests(TestCase):
+    """Test the public features of the user API."""
+
     def setUp(self):
         self.client = APIClient()
 
@@ -90,6 +90,14 @@ class PublicUserApiTests(TestCase):
         self.assertNotIn('token', res.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
+    def test_create_token_email_not_found(self):
+        """Test error returned if user not found for given email."""
+        payload = {'email': 'test@example.com', 'password': 'pass123'}
+        res = self.client.post(TOKEN_URL, payload)
+
+        self.assertNotIn('token', res.data)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_create_token_blank_password(self):
         """Test posting a blank password returns an error."""
         payload = {'email': 'test@example.com', 'password': ''}
@@ -136,8 +144,9 @@ class PrivateUserApiTest(TestCase):
 
         res = self.client.patch(ME_URL, payload)
 
-        # have to call refrseh from db to refresh value in db to get updated data
-        self.user.refresh_from_db(using='default')
+        # have to call refrseh from db to refresh value
+        # in db to get updated data
+        self.user.refresh_from_db()
         self.assertEqual(self.user.name, payload['name'])
         self.assertTrue(self.user.check_password(payload['password']))
         self.assertEqual(res.status_code, status.HTTP_200_OK)
