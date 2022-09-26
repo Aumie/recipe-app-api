@@ -7,7 +7,7 @@ name = "pypi"
 django = "<3.3,>=3.2.4"
 djangorestframework = "<3.13,>=3.12.4"
 psycopg2 = "<2.9,>=2.8.6"
-drf-spectacular = "<0.16,>=0.15.1"
+drf-spectacular = ">=0.15.1,<0.25"
 pillow = "<8.3.0,>=8.2.0"
 
 [dev-packages]
